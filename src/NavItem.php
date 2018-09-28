@@ -2,6 +2,8 @@
 
 namespace RauweBieten\Navigation;
 
+use RauweBieten\Navigation\Renderer\RendererInterface;
+
 class NavItem
 {
     /** @var string */
@@ -225,5 +227,11 @@ class NavItem
             }
         }
         return null;
+    }
+
+
+    public function accept(RendererInterface $renderer)
+    {
+        return $renderer->visitNavigation($this);
     }
 }
