@@ -1,0 +1,16 @@
+{
+  "name": "rauwebieten/navigation",
+  "description": "PHP helper class to build menu's, breadcrumbs ... ",
+  "license": "MIT License",
+  "require": {
+    "php": "^7.1"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "RauweBieten\\Navigation\\": "src/"
+    }
+  }
+}
