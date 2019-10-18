@@ -2,8 +2,6 @@
 
 namespace RauweBieten\Navigation;
 
-use RauweBieten\Navigation\Renderer\RendererInterface;
-
 class NavItem
 {
     /** @var string */
@@ -14,52 +12,17 @@ class NavItem
 
     /** @var string|null */
     protected $url;
+    /** @var array|NavItem[] */
+    protected $children = [];
+    /** @var NavItem|null */
+    protected $parent;
+    /** @var bool */
+    protected $active = false;
 
     public function __construct(string $id, string $label, ?string $url = null)
     {
         $this->id = $id;
         $this->label = $label;
-        $this->url = $url;
-    }
-
-    /** @var array|NavItem[] */
-    protected $children = [];
-
-    /** @var NavItem|null */
-    protected $parent;
-
-    /** @var bool */
-    protected $active = false;
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param string $id
-     */
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @param string $label
-     */
-    public function setLabel(string $label): void
-    {
-        $this->label = $label;
-    }
-
-    /**
-     * @param null|string $url
-     */
-    public function setUrl(?string $url): void
-    {
         $this->url = $url;
     }
 
@@ -72,11 +35,27 @@ class NavItem
     }
 
     /**
+     * @param string $label
+     */
+    public function setLabel(string $label): void
+    {
+        $this->label = $label;
+    }
+
+    /**
      * @return null|string
      */
     public function getUrl(): ?string
     {
         return $this->url;
+    }
+
+    /**
+     * @param null|string $url
+     */
+    public function setUrl(?string $url): void
+    {
+        $this->url = $url;
     }
 
     /**
@@ -90,6 +69,24 @@ class NavItem
         }
         $this->children[] = $child;
         $child->setParent($this);
+        return $this;
+    }
+
+    /**
+     * @return null|NavItem
+     */
+    public function getParent(): ?NavItem
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param NavItem $parent
+     * @return NavItem
+     */
+    protected function setParent(NavItem $parent): NavItem
+    {
+        $this->parent = $parent;
         return $this;
     }
 
@@ -108,16 +105,6 @@ class NavItem
     }
 
     /**
-     * @param NavItem $parent
-     * @return NavItem
-     */
-    protected function setParent(NavItem $parent): NavItem
-    {
-        $this->parent = $parent;
-        return $this;
-    }
-
-    /**
      * @return array|NavItem[]
      */
     public function getChildren(): array
@@ -126,18 +113,10 @@ class NavItem
     }
 
     /**
-     * @return null|NavItem
-     */
-    public function getParent(): ?NavItem
-    {
-        return $this->parent;
-    }
-
-    /**
      * @param bool $includeMe
      * @return array|NavItem[]
      */
-    public function getAncestors(bool $includeMe = true): array
+    public function getAncestors(bool $includeMe = null): array
     {
         $array = [];
         if ($includeMe === true) {
@@ -169,6 +148,19 @@ class NavItem
     /**
      * @return bool
      */
+    public function hasActiveDescendant(): bool
+    {
+        foreach ($this->getChildren() as $child) {
+            if ($child->isActive() or $child->hasActiveDescendant()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
     public function isActive(): bool
     {
         return $this->active;
@@ -184,30 +176,10 @@ class NavItem
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasActiveDescendant(): bool
-    {
-        foreach ($this->getChildren() as $child) {
-            if ($child->isActive() or $child->hasActiveDescendant()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function findItemById($id): ?NavItem
     {
         return $this->findItemBy(function (NavItem $item) use ($id) {
             return $item->getId() === $id;
-        });
-    }
-
-    public function findActiveItem(): ?NavItem
-    {
-        return $this->findItemBy(function (NavItem $item) {
-            return $item->isActive();
         });
     }
 
@@ -229,9 +201,26 @@ class NavItem
         return null;
     }
 
-
-    public function accept(RendererInterface $renderer)
+    /**
+     * @return string
+     */
+    public function getId(): string
     {
-        return $renderer->visitNavigation($this);
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function findActiveItem(): ?NavItem
+    {
+        return $this->findItemBy(function (NavItem $item) {
+            return $item->isActive();
+        });
     }
 }
