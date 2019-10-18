@@ -1,7 +1,7 @@
 {
   "name": "rauwebieten/navigation",
   "description": "PHP helper class to build menu's, breadcrumbs ... ",
-  "license": "MIT License",
+  "license": "proprietary",
   "require": {
     "php": "^7.1"
   },
