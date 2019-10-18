@@ -27,6 +27,8 @@ $found = $root->findItemById('item-2.5.1');
 $found->setActive(true);
 $found = $root->findActiveItem();
 
+print "---- ancestors ---- \n";
+
 foreach ($found->getAncestors() as $ancestor) {
     print $ancestor->getId().PHP_EOL;
 }

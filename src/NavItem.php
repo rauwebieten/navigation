@@ -123,7 +123,7 @@ class NavItem
             $array[] = $this;
         }
         if ($this->getParent() !== null) {
-            $array = array_merge($this->getParent()->getAncestors(), $array);
+            $array = array_merge($this->getParent()->getAncestors(true), $array);
         }
         return $array;
     }
